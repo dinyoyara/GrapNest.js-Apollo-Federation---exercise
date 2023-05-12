@@ -1,7 +1,15 @@
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  ResolveField,
+  Parent,
+} from '@nestjs/graphql';
 
-import { PostsService } from './posts.service';
+import { User } from './entities/user.entity';
 import { Post } from './entities/post.entity';
+import { PostsService } from './posts.service';
 import { CreatePostInput } from './dto/create-post.input';
 
 @Resolver(() => Post)
@@ -21,5 +29,13 @@ export class PostsResolver {
   @Query(() => Post, { name: 'post' })
   findOne(@Args('id') id: string) {
     return this.postsService.findOne(id);
+  }
+
+  @ResolveField(() => User)
+  author(@Parent() post: Post): any {
+    return {
+      _typeName: 'User',
+      id: post.authorId,
+    };
   }
 }
